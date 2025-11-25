@@ -84,7 +84,7 @@ export default function Registration() {
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Register for TEDx CMRNPUC ITPL</h1>
           <p className="text-lg text-muted-foreground">
-            December 6, 2025 | 10:00 AM | CMRNPUC ITPL, Bangalore
+            December 6, 2025 | 9:00 AM | CMRNPUC ITPL, Bangalore
           </p>
         </div>
 

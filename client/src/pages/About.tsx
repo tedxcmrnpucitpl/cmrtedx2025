@@ -30,7 +30,7 @@ export default function About() {
                   <Clock className="h-6 w-6 text-primary" />
                 </div>
                 <h3 className="text-xl font-bold mb-2">Time</h3>
-                <p className="text-muted-foreground">10:00 AM onwards</p>
+                <p className="text-muted-foreground">9:00 AM onwards</p>
               </Card>
 
               <Card className="p-6 hover-elevate">

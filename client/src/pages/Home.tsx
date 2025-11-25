@@ -5,7 +5,7 @@ import { Calendar, Clock, MapPin, ArrowRight } from "lucide-react";
 import { Link } from "wouter";
 
 export default function Home() {
-  const eventDate = new Date("2025-12-06T10:00:00");
+  const eventDate = new Date("2025-12-06T09:00:00");
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
 
   function calculateTimeLeft() {
@@ -101,7 +101,7 @@ export default function Home() {
                 <Clock className="h-8 w-8 text-primary" />
               </div>
               <h3 className="text-xl font-bold mb-2">Time</h3>
-              <p className="text-muted-foreground">10:00 AM onwards</p>
+              <p className="text-muted-foreground">9:00 AM onwards</p>
             </Card>
 
             <Card className="p-8 text-center hover-elevate">
