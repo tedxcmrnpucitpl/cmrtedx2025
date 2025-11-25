@@ -74,11 +74,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/sponsors", async (req, res) => {
+  app.post("/api/sponsors", requireAdmin, async (req, res) => {
     try {
       const validated = insertSponsorSchema.parse(req.body);
       const sponsor = await storage.createSponsor(validated);
       res.status(201).json(sponsor);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message });
+    }
+  });
+
+  app.delete("/api/sponsors/:id", requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteSponsor(id);
+      res.status(204).send();
     } catch (error: any) {
       res.status(400).json({ error: error.message });
     }

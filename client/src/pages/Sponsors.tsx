@@ -4,7 +4,6 @@ import { Handshake, Loader2 } from "lucide-react";
 import type { Sponsor } from "@shared/schema";
 
 export default function Sponsors() {
-
   const { data: sponsors, isLoading } = useQuery<Sponsor[]>({
     queryKey: ["/api/sponsors"],
   });
@@ -44,130 +43,6 @@ export default function Sponsors() {
                 </div>
               </Card>
             ))}
-          </div>
-        )}
-              
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                  <FormField
-                    control={form.control}
-                    name="companyName"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Company/Organization Name *</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Acme Corporation" {...field} data-testid="input-company" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="contactPerson"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Contact Person *</FormLabel>
-                        <FormControl>
-                          <Input placeholder="John Doe" {...field} data-testid="input-contact-person" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email *</FormLabel>
-                        <FormControl>
-                          <Input type="email" placeholder="contact@company.com" {...field} data-testid="input-sponsor-email" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Phone Number *</FormLabel>
-                        <FormControl>
-                          <Input placeholder="+91 98765 43210" {...field} data-testid="input-sponsor-phone" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="tier"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Interested Sponsorship Tier *</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                          <FormControl>
-                            <SelectTrigger data-testid="select-tier">
-                              <SelectValue placeholder="Select tier" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="Platinum">Platinum</SelectItem>
-                            <SelectItem value="Gold">Gold</SelectItem>
-                            <SelectItem value="Silver">Silver</SelectItem>
-                            <SelectItem value="Bronze">Bronze</SelectItem>
-                            <SelectItem value="Custom">Custom Package</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="message"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Additional Message (Optional)</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            placeholder="Tell us about your sponsorship goals..."
-                            className="min-h-24"
-                            {...field}
-                            data-testid="input-sponsor-message"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <Button
-                    type="submit"
-                    size="lg"
-                    className="w-full"
-                    disabled={mutation.isPending}
-                    data-testid="button-submit-sponsor"
-                  >
-                    {mutation.isPending ? (
-                      <>
-                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                        Submitting...
-                      </>
-                    ) : (
-                      "Submit Inquiry"
-                    )}
-                  </Button>
-                </form>
-              </Form>
-            </Card>
           </div>
         )}
       </div>

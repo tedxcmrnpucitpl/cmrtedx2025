@@ -28,6 +28,7 @@ export interface IStorage {
   
   getAllSponsors(): Promise<Sponsor[]>;
   createSponsor(sponsor: InsertSponsor): Promise<Sponsor>;
+  deleteSponsor(id: number): Promise<void>;
   
   getAllSupportTickets(): Promise<SupportTicket[]>;
   createSupportTicket(ticket: InsertSupportTicket): Promise<SupportTicket>;
@@ -70,6 +71,10 @@ export class DatabaseStorage implements IStorage {
   async createSponsor(sponsor: InsertSponsor): Promise<Sponsor> {
     const [newSponsor] = await db.insert(sponsors).values(sponsor).returning();
     return newSponsor;
+  }
+
+  async deleteSponsor(id: number): Promise<void> {
+    await db.delete(sponsors).where(eq(sponsors.id, id));
   }
 
   async getAllSupportTickets(): Promise<SupportTicket[]> {

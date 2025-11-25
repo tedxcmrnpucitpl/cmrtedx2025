@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { LogOut, Users, MessageSquare, Mic, Plus, Trash2, Send } from "lucide-react";
-import type { Registration, SupportTicket, Speaker } from "@shared/schema";
+import type { Registration, SupportTicket, Speaker, Sponsor } from "@shared/schema";
 import { useForm } from "react-hook-form";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -58,11 +58,44 @@ export default function AdminDashboard() {
     queryKey: ["/api/speakers"],
   });
 
+  const { data: sponsors, isLoading: loadingSponsors } = useQuery<Sponsor[]>({
+    queryKey: ["/api/sponsors"],
+  });
+
   const deleteSpeakerMutation = useMutation({
     mutationFn: (id: number) => apiRequest("DELETE", `/api/speakers/${id}`, {}),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/speakers"] });
       toast({ title: "Speaker deleted successfully" });
+    },
+  });
+
+  const deleteSponsorMutation = useMutation({
+    mutationFn: (id: number) => apiRequest("DELETE", `/api/sponsors/${id}`, {}),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/sponsors"] });
+      toast({ title: "Sponsor deleted successfully" });
+    },
+  });
+
+  const addSponsorMutation = useMutation({
+    mutationFn: async (formData: any) => {
+      let imageUrl = formData.imageUrl;
+      if (sponsorImageFile) {
+        imageUrl = await new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (e) => resolve(e.target?.result);
+          reader.readAsDataURL(sponsorImageFile);
+        });
+      }
+      return apiRequest("POST", "/api/sponsors", { ...formData, imageUrl, order: parseInt(formData.order) });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/sponsors"] });
+      setIsAddSponsorOpen(false);
+      setSponsorImageFile(null);
+      sponsorForm.reset();
+      toast({ title: "Sponsor added successfully" });
     },
   });
 
@@ -80,7 +113,13 @@ export default function AdminDashboard() {
     defaultValues: { name: "", title: "", bio: "", imageUrl: "", order: "0" },
   });
 
+  const sponsorForm = useForm({
+    defaultValues: { name: "", description: "", imageUrl: "", order: "0" },
+  });
+
   const [speakerImageFile, setSpeakerImageFile] = useState<File | null>(null);
+  const [isAddSponsorOpen, setIsAddSponsorOpen] = useState(false);
+  const [sponsorImageFile, setSponsorImageFile] = useState<File | null>(null);
 
   const addSpeakerMutation = useMutation({
     mutationFn: async (formData: any) => {
@@ -119,7 +158,7 @@ export default function AdminDashboard() {
 
       <div className="container mx-auto px-6 py-8">
         <Tabs defaultValue="registrations" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 max-w-3xl">
+          <TabsList className="grid w-full grid-cols-5 max-w-4xl">
             <TabsTrigger value="registrations" data-testid="tab-registrations">
               <Users className="h-4 w-4 mr-2" />
               Registrations
@@ -135,6 +174,10 @@ export default function AdminDashboard() {
             <TabsTrigger value="speakers" data-testid="tab-speakers">
               <Mic className="h-4 w-4 mr-2" />
               Speakers
+            </TabsTrigger>
+            <TabsTrigger value="sponsors" data-testid="tab-sponsors">
+              <Mic className="h-4 w-4 mr-2" />
+              Sponsors
             </TabsTrigger>
           </TabsList>
 
@@ -334,6 +377,76 @@ export default function AdminDashboard() {
                         data-testid={`button-delete-speaker-${speaker.id}`}
                       >
                         <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="sponsors">
+            <Card className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold">Sponsors ({sponsors?.length || 0})</h2>
+                <Dialog open={isAddSponsorOpen} onOpenChange={setIsAddSponsorOpen}>
+                  <DialogTrigger asChild>
+                    <Button data-testid="button-add-sponsor">
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Sponsor
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Add New Sponsor</DialogTitle>
+                    </DialogHeader>
+                    <form onSubmit={sponsorForm.handleSubmit((data) => addSponsorMutation.mutate(data))} className="space-y-4">
+                      <div>
+                        <Label htmlFor="sponsor-name">Name *</Label>
+                        <Input {...sponsorForm.register("name")} id="sponsor-name" required data-testid="input-sponsor-name" />
+                      </div>
+                      <div>
+                        <Label htmlFor="sponsor-description">Description *</Label>
+                        <Textarea {...sponsorForm.register("description")} id="sponsor-description" required data-testid="input-sponsor-description" />
+                      </div>
+                      <div>
+                        <Label htmlFor="sponsor-imageUrl">Image URL *</Label>
+                        <Input {...sponsorForm.register("imageUrl")} id="sponsor-imageUrl" required data-testid="input-sponsor-imageUrl" />
+                      </div>
+                      <div>
+                        <Label htmlFor="sponsor-order">Display Order</Label>
+                        <Input {...sponsorForm.register("order")} id="sponsor-order" type="number" data-testid="input-sponsor-order" />
+                      </div>
+                      <DialogFooter>
+                        <Button type="submit" data-testid="button-save-sponsor">Save Sponsor</Button>
+                      </DialogFooter>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+              </div>
+
+              {loadingSponsors ? (
+                <div className="space-y-2">
+                  {[1, 2, 3].map((i) => <Skeleton key={i} className="h-12 w-full" />)}
+                </div>
+              ) : !sponsors?.length ? (
+                <p className="text-muted-foreground text-center py-8">No sponsors added yet</p>
+              ) : (
+                <div className="grid md:grid-cols-2 gap-4">
+                  {sponsors.map((sponsor) => (
+                    <Card key={sponsor.id} className="p-4 overflow-hidden" data-testid={`card-admin-sponsor-${sponsor.id}`}>
+                      <img src={sponsor.imageUrl} alt={sponsor.name} className="w-full h-40 object-cover rounded mb-3" />
+                      <h3 className="font-bold mb-2">{sponsor.name}</h3>
+                      <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{sponsor.description}</p>
+                      <Button
+                        size="icon"
+                        variant="destructive"
+                        onClick={() => deleteSponsorMutation.mutate(sponsor.id)}
+                        data-testid={`button-delete-sponsor-${sponsor.id}`}
+                        className="w-full"
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete
                       </Button>
                     </Card>
                   ))}
