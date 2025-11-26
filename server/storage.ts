@@ -35,7 +35,10 @@ export interface IStorage {
   
   getAllSpeakers(): Promise<Speaker[]>;
   createSpeaker(speaker: InsertSpeaker): Promise<Speaker>;
+  updateSpeaker(id: number, speaker: InsertSpeaker): Promise<Speaker>;
   deleteSpeaker(id: number): Promise<void>;
+
+  updateSponsor(id: number, sponsor: InsertSponsor): Promise<Sponsor>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -103,8 +106,18 @@ export class DatabaseStorage implements IStorage {
     return newSpeaker;
   }
 
+  async updateSpeaker(id: number, speaker: InsertSpeaker): Promise<Speaker> {
+    const [updated] = await db.update(speakers).set(speaker).where(eq(speakers.id, id)).returning();
+    return updated;
+  }
+
   async deleteSpeaker(id: number): Promise<void> {
     await db.delete(speakers).where(eq(speakers.id, id));
+  }
+
+  async updateSponsor(id: number, sponsor: InsertSponsor): Promise<Sponsor> {
+    const [updated] = await db.update(sponsors).set(sponsor).where(eq(sponsors.id, id)).returning();
+    return updated;
   }
 }
 

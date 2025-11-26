@@ -140,11 +140,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.patch("/api/speakers/:id", requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const validated = insertSpeakerSchema.parse(req.body);
+      const speaker = await storage.updateSpeaker(id, validated);
+      res.json(speaker);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message });
+    }
+  });
+
   app.delete("/api/speakers/:id", requireAdmin, async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       await storage.deleteSpeaker(id);
       res.status(204).send();
+    } catch (error: any) {
+      res.status(400).json({ error: error.message });
+    }
+  });
+
+  app.patch("/api/sponsors/:id", requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const validated = insertSponsorSchema.parse(req.body);
+      const sponsor = await storage.updateSponsor(id, validated);
+      res.json(sponsor);
     } catch (error: any) {
       res.status(400).json({ error: error.message });
     }
