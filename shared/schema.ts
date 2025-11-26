@@ -23,12 +23,10 @@ export const registrations = pgTable("registrations", {
 
 export const sponsors = pgTable("sponsors", {
   id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
-  companyName: text("company_name").notNull(),
-  contactPerson: text("contact_person").notNull(),
-  email: text("email").notNull(),
-  phone: text("phone").notNull(),
-  tier: text("tier").notNull(),
-  message: text("message"),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  imageUrl: text("image_url").notNull(),
+  order: integer("order").notNull().default(0),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
